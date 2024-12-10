@@ -1,6 +1,3 @@
-// Based on code by the following links:
-// https://stackoverflow.com/a/74528564
-// https://web.dev/articles/async-clipboard
 export function copy(text: string) {
   return new Promise<void>((resolve, reject) => {
     if (
@@ -47,9 +44,24 @@ export function copy(text: string) {
         body.removeChild(textarea);
       }
     } else {
-      reject(
-        new Error("None of copying methods are supported by this browser!")
-      );
+      // Fallback for Safari
+      const textarea = createTemporaryTextarea(text);
+      const body = document.activeElement || document.body;
+      try {
+        body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand("copy");
+        if (successful) {
+          resolve();
+        } else {
+          reject(new Error("Copy command was unsuccessful"));
+        }
+      } catch (e) {
+        reject(e);
+      } finally {
+        body.removeChild(textarea);
+      }
     }
   });
 }
