@@ -112,6 +112,25 @@
           v-model.trim="password"
           tabindex="3"
         />
+        <p>{{ $t("buttons.copyToClipboard") }}</p>
+        <div class="input-group input">
+          <input
+            class="input input--block"
+            type="text"
+            :value="generatedLink"
+            readonly
+            tabindex="4"
+          />
+          <button
+            class="button button--flat button--blue"
+            @click="copyToClipboard(generatedLink)"
+            :aria-label="$t('buttons.copy')"
+            :title="$t('buttons.copy')"
+            tabindex="5"
+          >
+            {{ $t("buttons.copy") }}
+          </button>
+        </div>
       </div>
 
       <div class="card-action">
@@ -120,7 +139,7 @@
           @click="() => switchListing()"
           :aria-label="$t('buttons.cancel')"
           :title="$t('buttons.cancel')"
-          tabindex="5"
+          tabindex="6"
         >
           {{ $t("buttons.cancel") }}
         </button>
@@ -130,7 +149,7 @@
           @click="submit"
           :aria-label="$t('buttons.share')"
           :title="$t('buttons.share')"
-          tabindex="4"
+          tabindex="7"
         >
           {{ $t("buttons.share") }}
         </button>
@@ -157,6 +176,7 @@ export default {
       clip: null,
       password: "",
       listing: true,
+      generatedLink: "",
     };
   },
   inject: ["$showError", "$showSuccess"],
@@ -222,6 +242,7 @@ export default {
         this.time = 0;
         this.unit = "hours";
         this.password = "";
+        this.generatedLink = this.buildLink(res);
 
         this.listing = true;
       } catch (e) {
